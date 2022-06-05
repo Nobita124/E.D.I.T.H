@@ -5,9 +5,14 @@ import speech_recognition as sr
 import pyaudio
 import os
 import webbrowser
+from selenium import webdriver #pip install InstaPy
+from webdriver_manager.chrome import ChromeDriverManager #pip install webdriver_manager
+from getpass import getpass
+from random import randint
+from Greet import greet
 engine = pyttsx3.init('sapi5')
 voices = engine.getProperty('voices')
-engine.setProperty('voice', voices[1].id)
+engine.setProperty('voice', voices[2].id)
 #for male voice type "voices[0].id" for female voice type "voices[1].id"
 
 
@@ -18,8 +23,8 @@ def speak(audio):
     engine.runAndWait()
 
 def start():
-    
-    speak('Waiting for order...')
+    greet()
+    speak('Please tell me what can I do for you ...')
     com = input()
     com = com.lower()
     coma = com.split(" ")
@@ -35,7 +40,7 @@ def start():
         music_dir = 'Song'
         song = os.listdir(music_dir)
         print(song)
-        speak('Copy and paste the name of the music from above you wanna play')
+        speak('Sir! please Copy and paste the name of the music from above you wanna play')
         name = input()
         speak('playing music' + name)
         sleep(0.50)
@@ -87,10 +92,33 @@ def start():
         sleep(0.50)
         os.startfile(os.path.join(movie_dir, nam))
     elif 'youtube' in com :
-        webbrowser.open("youtube.com")
+        driver = webdriver.Chrome(ChromeDriverManager().install())
+        driver.get('https://www.youtube.com/')
     elif 'google' in com :
         webbrowser.open("google.com")
+    elif 'log in on insta' in com:
+        nme = input("Enter your username : ")
+        passwor= getpass('Enter your password : ')
+        driver = webdriver.Chrome(ChromeDriverManager().install())
+        driver.get('https://www.instagram.com/')
+        print ("Opened Instagram")
+
+        sleep(randint(1,4))
+        username = driver.find_element_by_name('username')
+        username.send_keys(nme)
+        password = driver.find_element_by_name('password')
+        password.send_keys(passwor)
     
+        button_login = driver.find_element_by_css_selector('#loginForm > div > div:nth-child(3) > button')
+        button_login.click()
+        sleep(randint(3,5))
+
+        notnow = driver.find_element_by_css_selector('#react-root > section > main > div > div > div > div > button')
+        notnow.click()
+        sleep(randint(3,5))
+        notificationnotnow = driver.find_element_by_xpath('/html/body/div[4]/div/div/div/div[3]/button[2]')
+        notificationnotnow.click()
+
 if __name__ == "__main__":
     start()
     while True:
@@ -101,3 +129,4 @@ if __name__ == "__main__":
          elif con.startswith('N'):
                 speak('Bye Sir ! I Hope that we will meet again ')
                 exit()
+               
